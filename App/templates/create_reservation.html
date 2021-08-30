@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="vh-100 login-section"
+         style="background: linear-gradient(90deg, rgba(9,52,56,1) 0%, rgba(9,111,121,1) 35%, rgba(0,212,255,1) 100%)">
+    <div class="container py-5 h-100">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-wrap p-4 p-md-5">
+                    <div class="icon d-flex align-items-center justify-content-center">
+                        <span class="far fa-calendar"></span>
+                    </div>
+                    <h3 class="text-center mb-4">Créer une réservation</h3>
+                    <form method="POST" class="login-form" id="reservation-form">
+                        <div class="form-group">
+                            {{form.title}}
+                        </div>
+                        <div class="form-group input-group d-flex date datetimepicker">
+                            {{form.start_date}}
+                            <div class="input-group-addon input-group-append">
+                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="form-group input-group d-flex date datetimepicker">
+                            {{form.end_date}}
+                            <div class="input-group-addon input-group-append">
+                                <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex date datetimepicker">
+                            {{form.resource}}
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary rounded submit p-3 px-5">Soumettre</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="output">
+                </div>
+        </div>
+    </div>
+</section>
+
+<!-- Code Javascript pour le calendrier -->
+<script type="text/javascript">
+    jQuery(document).ready(function ($) {
+        $('.datetimepicker').datetimepicker({
+            format: "DD-MM-YYYY HH:mm",
+            icons: {
+                time: 'fas fa-clock',
+                date: 'fas fa-calendar',
+                up: 'fas fa-chevron-up',
+                down: 'fas fa-chevron-down',
+                previous: 'fas fa-chevron-left',
+                next: 'fas fa-chevron-right',
+                today: 'fas fa-check',
+                clear: 'fas fa-trash',
+                close: 'fas fa-times'
+            }
+        });
+    });
+</script>
+
+<!-- Code Ajax pour la validation du formulaire -->
+<script>
+    $('#reservation-form').on('submit', function (e) {
+
+        e.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "{% url 'reservation_ajax' %}",
+            data: {
+                title: $('#id_title').val(),
+                start_date: $('#id_start_date').val(),
+                end_date: $('#id_end_date').val(),
+                resource: $('#id_resource').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                dataType: "json",
+
+            },
+
+            success: function (data) {
+                $('#output').html(data.msg)
+            },
+
+            failure: function () {
+
+            }
+
+
+        });
+
+
+    });
+</script>
+{% endblock %}
